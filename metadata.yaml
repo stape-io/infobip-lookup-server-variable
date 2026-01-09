@@ -1,5 +1,5 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/infobip-lookup-variable'
 versions:
-  - sha: <SHA-INITIAL_RELEASE>
+  - sha: e9bf96828f305b08700d905080570e28df3b5a77
     changeNotes: Initial Release.

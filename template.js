@@ -1,4 +1,5 @@
 const BigQuery = require('BigQuery');
+const createRegex = require('createRegex');
 const getAllEventData = require('getAllEventData');
 const getContainerVersion = require('getContainerVersion');
 const getRequestHeader = require('getRequestHeader');
@@ -76,24 +77,21 @@ function sendRequest(requestConfig) {
 
       if (result.statusCode === 200) {
         let objectToStore = {};
-        if (parsedBody.id) {
-          objectToStore = parsedBody;
-        } else {
-          log({
-            Name: 'InfobipLookup',
-            Type: 'Message',
-            EventName: chosenApi,
-            Message: 'Record not found.'
-          });
-          return;
-        }
+        objectToStore = parsedBody;
 
         if (data.storeResponse) {
           templateDataStorage.setItemCopy(cacheKey, objectToStore);
           templateDataStorage.setItemCopy(cacheKeyTimestamp, now);
         }
         return createReturningObject(objectToStore);
-      } else {
+      } else if (result.statusCode === 404) {
+        log({
+          Name: 'InfobipLookup',
+          Type: 'Message',
+          EventName: chosenApi,
+          Message: 'Request failure',
+          Reason: parsedBody.errorMessage
+        });
         return;
       }
       return createReturningObject(parsedBody);
@@ -127,19 +125,19 @@ function createReturningObject(sourceObject) {
 }
 
 function handleRequestConfig(data) {
-  const apiBaseUrl = data.baseUrl;
+  const protocolRegex = createRegex('https?:\\/\\/');
+  let apiBaseUrl = data.baseUrl.replace(protocolRegex, '');
   const apiPath = apiMethodsMapping[chosenApi]('path');
   const apiQueries = apiMethodsMapping[chosenApi]('queries');
-
   const requestConfig = {
-    url: apiBaseUrl + apiPath + apiQueries,
+    url: 'https://' + apiBaseUrl + apiPath + apiQueries,
     options: {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: 'App ' + data.apiKey
       },
-      method: apiMethodsMapping['PersonLookup']('requestMethod')
+      method: apiMethodsMapping[chosenApi]('requestMethod')
     }
   };
   return requestConfig;

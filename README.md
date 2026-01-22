@@ -15,6 +15,7 @@ This Google Tag Manager Server-Side variable allows you to retrieve a single con
 
 - **Base URL**: Your Infobip Base URL (e.g., `xxxxx.api.infobip.com`) found in the [Developer Tools > API Keys](https://portal.infobip.com/dev/api-keys) page Do not include `https://`.
 - **API Key**: Your Infobip API Key found in the [Developer Tools > API Keys](https://portal.infobip.com/dev/api-keys) page.
+  - **Scopes**: at least one of the following scopes `people:manage` and `people:read`
 
 ### 2. Lookup Parameters
 

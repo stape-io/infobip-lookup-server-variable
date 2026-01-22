@@ -1,6 +1,6 @@
 # Infobip CDP Lookup Variable for GTM Server-Side
 
-This Google Tag Manager Server-Side variable allows you to retrieve contact information using the Infobip API.
+This Google Tag Manager Server-Side variable allows you to retrieve a single contact profile information given an identifier from Infobip People CDP using the Infobip People CDP API.
 
 ## Features
 
@@ -13,8 +13,8 @@ This Google Tag Manager Server-Side variable allows you to retrieve contact info
 
 ### 1. API Configuration
 
-- **Base URL**: Your Infobip Base URL (e.g., `xxxxx.api.infobip.com`). Do not include `https://`.
-- **API Key**: Your Infobip API Key found in the Developer Dashboard.
+- **Base URL**: Your Infobip Base URL (e.g., `xxxxx.api.infobip.com`) found in the [Developer Tools > API Keys](https://portal.infobip.com/dev/api-keys) page Do not include `https://`.
+- **API Key**: Your Infobip API Key found in the [Developer Tools > API Keys](https://portal.infobip.com/dev/api-keys) page.
 
 ### 2. Lookup Parameters
 
@@ -34,4 +34,4 @@ This Google Tag Manager Server-Side variable allows you to retrieve contact info
 
 ## Open Source
 
-The **Infobip Lookup Variable by Stape** is developed and maintained by the [Stape Team](https://stape.io/) under the Apache 2.0 license.
+The **Infobip CDP Lookup Variable by Stape** is developed and maintained by the [Stape Team](https://stape.io/) under the Apache 2.0 license.

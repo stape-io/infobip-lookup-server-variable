@@ -1,5 +1,4 @@
 const BigQuery = require('BigQuery');
-const createRegex = require('createRegex');
 const encodeUriComponent = require('encodeUriComponent');
 const getAllEventData = require('getAllEventData');
 const getContainerVersion = require('getContainerVersion');
@@ -31,30 +30,24 @@ return sendRequest();
 function sendRequest() {
   const chosenApi = 'PersonLookup';
   const requestConfig = handleRequestConfig(data, chosenApi);
-  const cacheKey = sha256Sync(
-    'infobip' + chosenApi + requestConfig.url + data.identifier + data.apiKey || ''
-  );
+  const cacheKey = sha256Sync('infobip' + chosenApi + requestConfig.url + data.apiKey);
   const cacheKeyTimestamp = cacheKey + '_timestamp';
-  const cacheExpirationTimeMillis =
-    data.expirationTime && makeInteger(data.expirationTime) * 60 * 60 * 1000;
+  const cacheExpirationTimeMillis = makeInteger(data.expirationTime || 12) * 60 * 60 * 1000;
   const now = getTimestampMillis();
 
   if (data.storeResponse) {
-    let cachedValues = templateDataStorage.getItemCopy(cacheKey);
+    const cachedValues = templateDataStorage.getItemCopy(cacheKey);
     const cachedValueTimestamp = templateDataStorage.getItemCopy(cacheKeyTimestamp);
 
-    if (data.expirationTime) {
-      if (
-        cachedValueTimestamp &&
-        now - makeInteger(cachedValueTimestamp) >= cacheExpirationTimeMillis
-      ) {
-        cachedValues = '';
-        templateDataStorage.removeItem(cacheKey);
-        templateDataStorage.removeItem(cacheKeyTimestamp);
-      }
-    }
-    if (cachedValues)
+    if (
+      cachedValueTimestamp &&
+      now - makeInteger(cachedValueTimestamp) >= cacheExpirationTimeMillis
+    ) {
+      templateDataStorage.removeItem(cacheKey);
+      templateDataStorage.removeItem(cacheKeyTimestamp);
+    } else if (cachedValues) {
       return Promise.create((resolve) => resolve(createReturningObject(cachedValues)));
+    }
   }
 
   log({
@@ -75,28 +68,17 @@ function sendRequest() {
         ResponseHeaders: result.headers,
         ResponseBody: result.body
       });
-      const parsedBody = JSON.parse(result.body || '{}');
 
       if (result.statusCode === 200) {
-        let objectToStore = {};
-        objectToStore = parsedBody;
-
+        const parsedBody = JSON.parse(result.body || '{}');
         if (data.storeResponse) {
-          templateDataStorage.setItemCopy(cacheKey, objectToStore);
+          templateDataStorage.setItemCopy(cacheKey, parsedBody);
           templateDataStorage.setItemCopy(cacheKeyTimestamp, now);
         }
-        return createReturningObject(objectToStore);
-      } else if (result.statusCode === 404) {
-        log({
-          Name: 'InfobipLookup',
-          Type: 'Message',
-          EventName: chosenApi,
-          Message: 'Request failure',
-          Reason: parsedBody.errorMessage
-        });
+        return createReturningObject(parsedBody);
+      } else {
         return;
       }
-      return createReturningObject(parsedBody);
     })
     .catch((result) => {
       log({
@@ -134,19 +116,11 @@ function handleRequestConfig(data, chosenApi) {
   };
   const apiPath = apiMethodsMapping[chosenApi]('path');
   const apiQueries = apiMethodsMapping[chosenApi]('queries');
-  const protocolRegex = createRegex('https?:\\/\\/');
-  let apiBaseUrl = data.baseUrl;
-  let requestConfig = {};
-
-  apiBaseUrl = apiBaseUrl.match(protocolRegex)
-    ? apiBaseUrl.replace(protocolRegex, 'https://')
-    : 'https://' + apiBaseUrl;
-
-  requestConfig = {
+  const apiBaseUrl = 'https://' + data.baseUrl.replace('https://', '').replace('http://', '');
+  const requestConfig = {
     url: apiBaseUrl + apiPath + apiQueries,
     options: {
       headers: {
-        'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: 'App ' + data.apiKey
       },
@@ -158,7 +132,7 @@ function handleRequestConfig(data, chosenApi) {
 
 function personLookupHandler(method) {
   if (method === 'requestMethod') return 'GET';
-  if (method === 'path') return '/people/2/persons?';
+  if (method === 'path') return '/people/2/persons';
   if (method === 'queries') {
     const queriesUrl = [];
     const queries = {
@@ -167,9 +141,9 @@ function personLookupHandler(method) {
       sender: data.sender
     };
     for (const key in queries) {
-      if (queries[key]) queriesUrl.push(key + '=' + enc(queries[key]));
+      if (queries[key]) queriesUrl.push(enc(key) + '=' + enc(queries[key]));
     }
-    return queriesUrl.join('&');
+    return '?' + queriesUrl.join('&');
   }
 }
 
@@ -180,10 +154,6 @@ function personLookupHandler(method) {
 function shouldExitEarly(eventData) {
   const url = eventData.page_location || getRequestHeader('referer');
   if (url && url.lastIndexOf('https://gtm-msr.appspot.com/', 0) === 0) return true;
-
-  if (getType(data.baseUrl) !== 'string' || getType(data.apiKey) !== 'string') return true;
-
-  if (!data.sender && !data.type.match('ID|EXTERNAL_ID|EMAIL|PHONE')) return true;
 }
 
 function enc(data) {

@@ -10,7 +10,7 @@ ___INFO___
 
 {
   "type": "MACRO",
-  "id": "cvt_temp_public_id_infobip_lookup",
+  "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
   "displayName": "Infobip CDP Lookup Variable",
@@ -19,13 +19,10 @@ ___INFO___
     "UTILITY",
     "PERSONALIZATION"
   ],
-  "description": "Variable that returns single contact information from your Infobip CDP Account.",
+  "description": "Variable that returns single person profile information from your Infobip People CDP.",
   "containerContexts": [
     "SERVER"
-  ],
-  "brand": {
-    "displayName": "stape.io"
-  }
+  ]
 }
 
 
@@ -46,9 +43,16 @@ ___TEMPLATE_PARAMETERS___
         "valueValidators": [
           {
             "type": "NON_EMPTY"
+          },
+          {
+            "type": "REGEX",
+            "args": [
+              ".+\\.api\\.infobip\\.com$"
+            ],
+            "errorMessage": "API Base URL must end with \u0027api.infobip.com\u0027"
           }
         ],
-        "help": "Your personal Infobip Base URL (e.g., xxxxx.api.infobip.com). Do not include \u0027https://\u0027, use the base URL given by the platform as is.",
+        "help": "Your personal Infobip API Base URL (e.g., xxxxx.api.infobip.com) found in the \u003ca href\u003d\"https://portal.infobip.com/dev/api-keys\"\u003eDeveloper Tools \u003e API Keys\u003c/a\u003e page.\n\u003cbr/\u003e\nDo not include \u0027https://\u0027, use the API Base URL given by the platform as is.",
         "valueHint": "xxxxx.api.infobip.com"
       },
       {
@@ -61,7 +65,7 @@ ___TEMPLATE_PARAMETERS___
             "type": "NON_EMPTY"
           }
         ],
-        "help": "Your Infobip API Key found in the Developer Dashboard."
+        "help": "Your Infobip API Key found in the \u003ca href\u003d\"https://portal.infobip.com/dev/api-keys\"\u003eDeveloper Tools \u003e API Keys\u003c/a\u003e page.\n\u003cbr/\u003e\nIt should have the \u003ci\u003epeople:read\u003c/i\u003e or \u003ci\u003epeople:manage\u003c/i\u003e scopes."
       }
     ]
   },
@@ -74,7 +78,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "LABEL",
         "name": "helpLookup",
-        "displayName": "Provide one unique identifier from the dropdown list below to lookup the profile."
+        "displayName": "Provide one unique identifier from the dropdown list below to lookup the person profile information."
       },
       {
         "type": "SELECT",
@@ -84,7 +88,7 @@ ___TEMPLATE_PARAMETERS___
         "selectItems": [
           {
             "value": "ID",
-            "displayValue": "ID"
+            "displayValue": "ID (also known as Internal ID)"
           },
           {
             "value": "EXTERNAL_ID",
@@ -164,33 +168,109 @@ ___TEMPLATE_PARAMETERS___
           {
             "type": "NON_EMPTY"
           }
-        ]
+        ],
+        "help": "The type of ID used for the person profile lookup."
       },
       {
         "type": "TEXT",
         "name": "identifier",
         "displayName": "Identifier Value",
         "simpleValueType": true,
-        "enablingConditions": [
-          {
-            "paramName": "type",
-            "paramValue": "",
-            "type": "PRESENT"
-          }
-        ],
         "valueValidators": [
           {
             "type": "NON_EMPTY"
           }
-        ]
+        ],
+        "help": "The value of the ID used for the person profile lookup."
       },
       {
         "type": "TEXT",
         "name": "sender",
         "displayName": "Sender",
         "simpleValueType": true,
-        "valueValidators": [],
-        "help": "Sender or Application ID. Required for all types except for: \u003cb\u003eID, External ID, Phone or Email\u003c/b\u003e."
+        "valueValidators": [
+          {
+            "type": "NON_EMPTY",
+            "enablingConditions": [
+              {
+                "paramName": "type",
+                "paramValue": "LINE",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "FACEBOOK",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "TELEGRAM",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "PUSH",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "WEB_PUSH",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "LIVE_CHAT",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "VIBER_BOTS",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "INSTAGRAM",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "INSTAGRAM_DM",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "TWITTER",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "APPLE_BUSINESS_CHAT",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "KAKAO_SANGDAM",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "OPEN_CHANNEL",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "ZALO_FOLLOWER",
+                "type": "EQUALS"
+              },
+              {
+                "paramName": "type",
+                "paramValue": "TIKTOK_BM",
+                "type": "EQUALS"
+              }
+            ]
+          }
+        ],
+        "help": "Sender or Application ID. \n\u003cbr/\u003e\nRequired for all types except for: \u003cb\u003eID, External ID, Phone\u003c/b\u003e or \u003cb\u003eEmail\u003c/b\u003e."
       },
       {
         "type": "CHECKBOX",
@@ -382,7 +462,6 @@ ___TEMPLATE_PARAMETERS___
 ___SANDBOXED_JS_FOR_SERVER___
 
 const BigQuery = require('BigQuery');
-const createRegex = require('createRegex');
 const encodeUriComponent = require('encodeUriComponent');
 const getAllEventData = require('getAllEventData');
 const getContainerVersion = require('getContainerVersion');
@@ -414,30 +493,24 @@ return sendRequest();
 function sendRequest() {
   const chosenApi = 'PersonLookup';
   const requestConfig = handleRequestConfig(data, chosenApi);
-  const cacheKey = sha256Sync(
-    'infobip' + chosenApi + requestConfig.url + data.identifier + data.apiKey || ''
-  );
+  const cacheKey = sha256Sync('infobip' + chosenApi + requestConfig.url + data.apiKey);
   const cacheKeyTimestamp = cacheKey + '_timestamp';
-  const cacheExpirationTimeMillis =
-    data.expirationTime && makeInteger(data.expirationTime) * 60 * 60 * 1000;
+  const cacheExpirationTimeMillis = makeInteger(data.expirationTime || 12) * 60 * 60 * 1000;
   const now = getTimestampMillis();
 
   if (data.storeResponse) {
-    let cachedValues = templateDataStorage.getItemCopy(cacheKey);
+    const cachedValues = templateDataStorage.getItemCopy(cacheKey);
     const cachedValueTimestamp = templateDataStorage.getItemCopy(cacheKeyTimestamp);
 
-    if (data.expirationTime) {
-      if (
-        cachedValueTimestamp &&
-        now - makeInteger(cachedValueTimestamp) >= cacheExpirationTimeMillis
-      ) {
-        cachedValues = '';
-        templateDataStorage.removeItem(cacheKey);
-        templateDataStorage.removeItem(cacheKeyTimestamp);
-      }
-    }
-    if (cachedValues)
+    if (
+      cachedValueTimestamp &&
+      now - makeInteger(cachedValueTimestamp) >= cacheExpirationTimeMillis
+    ) {
+      templateDataStorage.removeItem(cacheKey);
+      templateDataStorage.removeItem(cacheKeyTimestamp);
+    } else if (cachedValues) {
       return Promise.create((resolve) => resolve(createReturningObject(cachedValues)));
+    }
   }
 
   log({
@@ -458,28 +531,17 @@ function sendRequest() {
         ResponseHeaders: result.headers,
         ResponseBody: result.body
       });
-      const parsedBody = JSON.parse(result.body || '{}');
 
       if (result.statusCode === 200) {
-        let objectToStore = {};
-        objectToStore = parsedBody;
-
+        const parsedBody = JSON.parse(result.body || '{}');
         if (data.storeResponse) {
-          templateDataStorage.setItemCopy(cacheKey, objectToStore);
+          templateDataStorage.setItemCopy(cacheKey, parsedBody);
           templateDataStorage.setItemCopy(cacheKeyTimestamp, now);
         }
-        return createReturningObject(objectToStore);
-      } else if (result.statusCode === 404) {
-        log({
-          Name: 'InfobipLookup',
-          Type: 'Message',
-          EventName: chosenApi,
-          Message: 'Request failure',
-          Reason: parsedBody.errorMessage
-        });
+        return createReturningObject(parsedBody);
+      } else {
         return;
       }
-      return createReturningObject(parsedBody);
     })
     .catch((result) => {
       log({
@@ -517,19 +579,11 @@ function handleRequestConfig(data, chosenApi) {
   };
   const apiPath = apiMethodsMapping[chosenApi]('path');
   const apiQueries = apiMethodsMapping[chosenApi]('queries');
-  const protocolRegex = createRegex('https?:\\/\\/');
-  let apiBaseUrl = data.baseUrl;
-  let requestConfig = {};
-
-  apiBaseUrl = apiBaseUrl.match(protocolRegex)
-    ? apiBaseUrl.replace(protocolRegex, 'https://')
-    : 'https://' + apiBaseUrl;
-
-  requestConfig = {
+  const apiBaseUrl = 'https://' + data.baseUrl.replace('https://', '').replace('http://', '');
+  const requestConfig = {
     url: apiBaseUrl + apiPath + apiQueries,
     options: {
       headers: {
-        'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: 'App ' + data.apiKey
       },
@@ -541,7 +595,7 @@ function handleRequestConfig(data, chosenApi) {
 
 function personLookupHandler(method) {
   if (method === 'requestMethod') return 'GET';
-  if (method === 'path') return '/people/2/persons?';
+  if (method === 'path') return '/people/2/persons';
   if (method === 'queries') {
     const queriesUrl = [];
     const queries = {
@@ -550,9 +604,9 @@ function personLookupHandler(method) {
       sender: data.sender
     };
     for (const key in queries) {
-      if (queries[key]) queriesUrl.push(key + '=' + enc(queries[key]));
+      if (queries[key]) queriesUrl.push(enc(key) + '=' + enc(queries[key]));
     }
-    return queriesUrl.join('&');
+    return '?' + queriesUrl.join('&');
   }
 }
 
@@ -563,10 +617,6 @@ function personLookupHandler(method) {
 function shouldExitEarly(eventData) {
   const url = eventData.page_location || getRequestHeader('referer');
   if (url && url.lastIndexOf('https://gtm-msr.appspot.com/', 0) === 0) return true;
-
-  if (getType(data.baseUrl) !== 'string' || getType(data.apiKey) !== 'string') return true;
-
-  if (!data.sender && !data.type.match('ID|EXTERNAL_ID|EMAIL|PHONE')) return true;
 }
 
 function enc(data) {
@@ -920,7 +970,5 @@ setup: ''
 
 ___NOTES___
 
-Created on 01/08/2026
-}
-
+Created on 1/22/2026, 5:51:49 PM
 

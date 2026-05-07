@@ -36,3 +36,6 @@ This Google Tag Manager Server-Side variable allows you to retrieve a single con
 ## Open Source
 
 The **Infobip CDP Lookup Variable by Stape** is developed and maintained by the [Stape Team](https://stape.io/) under the Apache 2.0 license.
+
+### GTM Gallery Status
+🟢 [Listed](https://tagmanager.google.com/gallery/#/owners/stape-io/templates/infobip-lookup-server-variable)

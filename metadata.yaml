@@ -1,5 +1,7 @@
 homepage: 'https://stape.io/'
 documentation: 'https://github.com/stape-io/infobip-lookup-server-variable'
 versions:
+  - sha: ae0e89eb89c9bd3900fd529b2fe6e4d8a4d887a6
+    changeNotes: Console and BigQuery logging removal.
   - sha: 729f25c30bb53886fd5f822873c2a62ce78439d0
     changeNotes: Initial Release.

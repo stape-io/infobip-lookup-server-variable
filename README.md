@@ -7,7 +7,6 @@ This Google Tag Manager Server-Side variable allows you to retrieve a single con
 - **Multiple Identifiers**: Lookup profiles by ID, External ID, Email, Phone, Facebook, Telegram, and many others.
 - **Built-in Caching**: Stores API responses in Template Storage to reduce API calls and latency (configurable expiration).
 - **Flexible Output**: Extract specific keys or return the full object. Supports flattening nested JSON responses.
-- **BigQuery Logging**: Native support for logging request and response data to BigQuery.
 
 ## Configuration
 
